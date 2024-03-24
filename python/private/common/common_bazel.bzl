@@ -63,10 +63,34 @@ def maybe_precompile(ctx, srcs, pyc_mode):
     Returns:
         List of Files; the desired output files derived from the input sources.
     """
-    _ = ctx  # @unused
-    _ = pyc_mode
-    # Precompilation isn't implemented yet, so just return srcs as-is
-    return srcs
+    if pyc_mode == "auto" or pyc_mode == "py_only":
+        return srcs
+    compilation_mode = "CHECKED_HASH" if pyc_mode == "pyc_checked_hash" else "UNCHECKED_HASH"
+
+    pycs = []  
+    pyc_file_extension = ".cpython-" + ctx.toolchains["//python:precompiler_toolchain_type"].python_version + ".pyc"
+    for src in srcs:
+        if src.extension != "py" or "site-packages" not in src.path: # TODO @ryang debug replace this prior to submission
+            continue
+
+        basename = src.basename
+        dirname = src.path.rsplit("/", 1)[0].split("/", 2)[2]
+
+        pyc_out = dirname + "/__pycache__/" + basename.replace(".py", pyc_file_extension)
+        pyc = ctx.actions.declare_file(pyc_out)
+
+        ctx.actions.run(
+            inputs = [src],
+            outputs = [pyc],
+            executable = ctx.toolchains["//python:precompiler_toolchain_type"].interpreter,
+            args = [ctx.toolchains["//python:precompiler_toolchain_type"].precompiler_src] + [src.path, pyc.path, compilation_mode],
+            toolchain = "//python:precompiler_toolchain_type",
+        )
+
+    if pyc_mode == "pyc_only":
+        return pycs
+
+    return srcs + pycs
 
 def get_imports(ctx):
     """Gets the imports from a rule's `imports` attribute.
