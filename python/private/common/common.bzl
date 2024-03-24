@@ -356,6 +356,7 @@ def create_py_info(ctx, *, direct_sources, imports):
     uses_shared_libraries = False
     has_py2_only_sources = ctx.attr.srcs_version in ("PY2", "PY2ONLY")
     has_py3_only_sources = ctx.attr.srcs_version in ("PY3", "PY3ONLY")
+    pyc_mode = "auto"
     transitive_sources_depsets = []  # list of depsets
     transitive_sources_files = []  # list of Files
     for target in ctx.attr.deps:
@@ -366,6 +367,7 @@ def create_py_info(ctx, *, direct_sources, imports):
             uses_shared_libraries = uses_shared_libraries or info.uses_shared_libraries
             has_py2_only_sources = has_py2_only_sources or info.has_py2_only_sources
             has_py3_only_sources = has_py3_only_sources or info.has_py3_only_sources
+            pyc_mode = pyc_mode or info.pyc_mode
         else:
             # TODO(b/228692666): Remove this once non-PyInfo targets are no
             # longer supported in `deps`.

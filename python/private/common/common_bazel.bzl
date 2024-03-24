@@ -50,7 +50,7 @@ def collect_cc_info(ctx, extra_deps = []):
 
     return _cc_common.merge_cc_infos(cc_infos = cc_infos)
 
-def maybe_precompile(ctx, srcs):
+def maybe_precompile(ctx, srcs, pyc_mode):
     """Computes all the outputs (maybe precompiled) from the input srcs.
 
     See create_binary_semantics_struct for details about this function.
@@ -58,12 +58,13 @@ def maybe_precompile(ctx, srcs):
     Args:
         ctx: Rule ctx.
         srcs: List of Files; the inputs to maybe precompile.
+        pyc_mode: mode to determine compilation process for pycs and what outputs will be returned
 
     Returns:
         List of Files; the desired output files derived from the input sources.
     """
     _ = ctx  # @unused
-
+    _ = pyc_mode
     # Precompilation isn't implemented yet, so just return srcs as-is
     return srcs
 
