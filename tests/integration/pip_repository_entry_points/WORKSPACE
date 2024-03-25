@@ -9,6 +9,7 @@ load("@rules_python//python:repositories.bzl", "py_repositories", "python_regist
 
 py_repositories()
 
+register_toolchains("//:precompiler_3_10_python_linux_x86_64_toolchain")
 # This toolchain is explicitly 3.10 while `rules_python` is 3.9 to act as
 # a regression test, ensuring 3.10 is functional
 python_register_toolchains(

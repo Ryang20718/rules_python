@@ -57,7 +57,7 @@ def py_library_impl(ctx, *, semantics):
     """
     check_native_allowed(ctx)
     direct_sources = filter_to_py_srcs(ctx.files.srcs)
-    output_sources = depset(semantics.maybe_precompile(ctx, direct_sources, ctx.attr.pyc_mode))
+    output_sources = depset(semantics.maybe_precompile(ctx, direct_sources, semantics.pyc_mode))
     runfiles = collect_runfiles(ctx = ctx, files = output_sources)
 
     cc_info = semantics.get_cc_info_for_library(ctx)

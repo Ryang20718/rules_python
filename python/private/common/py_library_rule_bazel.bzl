@@ -28,17 +28,18 @@ _BAZEL_LIBRARY_ATTRS = union_attrs(
     IMPORTS_ATTRS,
 )
 
-def create_library_semantics_bazel():
+def create_library_semantics_bazel(pyc_mode):
     return create_library_semantics_struct(
         get_imports = get_imports,
         maybe_precompile = maybe_precompile,
         get_cc_info_for_library = collect_cc_info,
+        pyc_mode = pyc_mode,
     )
 
 def _py_library_impl(ctx):
     return bazel_py_library_impl(
         ctx,
-        semantics = create_library_semantics_bazel(),
+        semantics = create_library_semantics_bazel(ctx.attr.pyc_mode),
     )
 
 py_library = create_py_library_rule(

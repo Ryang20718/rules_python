@@ -31,4 +31,5 @@ py_precompiler_toolchain = rule(
         "precompiler_src": attr.label(cfg="exec", default = Label("//tools/precompiler:precompiler.py")),
         "python_version": attr.string(doc = "python version. I.e 310 for python 3.10. Used for generating magic tag for pyc file", mandatory = True),
     },
+    toolchains = ["//python:precompiler_toolchain_type"],
 )

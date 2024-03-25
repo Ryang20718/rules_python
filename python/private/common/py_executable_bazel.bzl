@@ -123,6 +123,7 @@ def create_binary_semantics_bazel():
         get_native_deps_user_link_flags = _get_native_deps_user_link_flags,
         get_stamp_flag = _get_stamp_flag,
         maybe_precompile = maybe_precompile,
+        pyc_mode = lambda ctx: ctx.attr.pyc_mode,
         should_build_native_deps_dso = lambda ctx: False,
         should_create_init_files = _should_create_init_files,
         should_include_build_data = lambda ctx: False,
