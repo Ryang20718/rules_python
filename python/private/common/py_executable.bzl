@@ -64,6 +64,8 @@ _CC_TOOLCHAINS = [config_common.toolchain_type(
     mandatory = False,
 )] if hasattr(config_common, "toolchain_type") else []
 
+_PY_PRECOMPILER_TOOLCHAIN = "//python:precompiler_toolchain_type"
+
 # Non-Google-specific attributes for executables
 # These attributes are for rules that accept Python sources.
 EXECUTABLE_ATTRS = union_attrs(
@@ -854,7 +856,7 @@ def create_base_executable_rule(*, attrs, fragments = [], **kwargs):
     return rule(
         # TODO: add ability to remove attrs, i.e. for imports attr
         attrs = dicts.add(EXECUTABLE_ATTRS, attrs),
-        toolchains = [TOOLCHAIN_TYPE] + _CC_TOOLCHAINS,
+        toolchains = [_PY_PRECOMPILER_TOOLCHAIN, TOOLCHAIN_TYPE] + _CC_TOOLCHAINS,
         fragments = fragments,
         **kwargs
     )

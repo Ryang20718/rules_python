@@ -38,13 +38,13 @@ toolchain(
         "@platforms//os:linux",
     ],
     exec_compatible_with = ["@platforms//os:linux"],
-    toolchain = ":precompiler_toolchain_impl",
+    toolchain = ":precompiler_toolchain_py_310",
     toolchain_type = "@rules_python//python:precompiler_toolchain_type",
     visibility = ["//visibility:public"],
 )
 
 py_precompiler_toolchain(
-    name = "precompiler_toolchain_impl",
+    name = "precompiler_toolchain_py_310",
     interpreter = ":bin/python3.10",
     python_version="310",
 )
