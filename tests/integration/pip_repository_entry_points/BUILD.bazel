@@ -1,5 +1,5 @@
 load("@pip//:requirements.bzl", "entry_point")
-load("@rules_python//python:defs.bzl", "py_test", "py_precompiler_toolchain")
+load("@rules_python//python:defs.bzl", "py_test", "py_precompiler_toolchain", "py_library")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 # This rule adds a convenient way to update the requirements file.
@@ -16,9 +16,15 @@ pip_sphinx = entry_point(
 
 pip_yamllint = entry_point("yamllint")
 
+py_library(
+    name = "pip_repository_entry_points_test_py",
+    srcs = ["pip_repository_entry_points_test.py"],
+    deps = ["@rules_python//python/runfiles"],
+    pyc_mode = "pyc_only",#"auto",
+)
 py_test(
     name = "pip_parse_entry_points_test",
-    srcs = ["pip_repository_entry_points_test.py"],
+    srcs = ["pip_repository_entry_points_test_py"],
     data = [
         pip_sphinx,
         pip_yamllint,
@@ -28,7 +34,6 @@ py_test(
         "YAMLLINT_ENTRY_POINT": "$(rootpath {})".format(pip_yamllint),
     },
     main = "pip_repository_entry_points_test.py",
-    deps = ["@rules_python//python/runfiles"],
 )
 
 toolchain(
@@ -43,8 +48,13 @@ toolchain(
     visibility = ["//visibility:public"],
 )
 
+sh_binary(
+    name = "python310", # TODO (ryang) figure out how to use the existing python toolchain?
+    srcs = ["wrapper.sh"],
+)
+
 py_precompiler_toolchain(
     name = "precompiler_toolchain_py_310",
-    interpreter = ":bin/python3.10",
+    interpreter = ":python310",
     python_version="310",
 )
