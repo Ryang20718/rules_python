@@ -22,6 +22,7 @@ load("//python:py_runtime_info.bzl", internal_PyRuntimeInfo = "PyRuntimeInfo")
 load("//python:py_runtime_pair.bzl", _py_runtime_pair = "py_runtime_pair")
 load("//python:py_test.bzl", _py_test = "py_test")
 load(":current_py_toolchain.bzl", _current_py_toolchain = "current_py_toolchain")
+load(":py_precompiler_toolchain.bzl", _py_precompiler_toolchain = "py_precompiler_toolchain")
 load(":py_import.bzl", _py_import = "py_import")
 
 # Patching placeholder: end of loads
@@ -31,6 +32,8 @@ PyInfo = _PyInfo
 PyRuntimeInfo = internal_PyRuntimeInfo
 
 current_py_toolchain = _current_py_toolchain
+
+py_precompiler_toolchain = _py_precompiler_toolchain
 
 py_import = _py_import
 

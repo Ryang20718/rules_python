@@ -1,5 +1,5 @@
 load("@pip//:requirements.bzl", "entry_point")
-load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_python//python:defs.bzl", "py_test", "py_precompiler_toolchain")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 # This rule adds a convenient way to update the requirements file.
@@ -29,4 +29,22 @@ py_test(
     },
     main = "pip_repository_entry_points_test.py",
     deps = ["@rules_python//python/runfiles"],
+)
+
+toolchain(
+    name = "precompiler_3_10_python_linux_x86_64_toolchain",
+    target_compatible_with = [
+        # "@rules_python//python/config_settings:is_python_3.10", # doesn't have mandatory ConstraintValueInfo TODO(ryang) remove after debugging
+        "@platforms//os:linux",
+    ],
+    exec_compatible_with = ["@platforms//os:linux"],
+    toolchain = ":precompiler_toolchain_impl",
+    toolchain_type = "@rules_python//python:precompiler_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+py_precompiler_toolchain(
+    name = "precompiler_toolchain_impl",
+    interpreter = ":bin/python3.10",
+    python_version="310",
 )

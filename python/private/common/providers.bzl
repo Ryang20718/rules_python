@@ -24,6 +24,8 @@ DEFAULT_BOOTSTRAP_TEMPLATE = Label("//python/private:python_bootstrap_template.t
 
 _PYTHON_VERSION_VALUES = ["PY2", "PY3"]
 
+_PYC_MODE_VALUES = ["auto", "py_only", "pyc_only", "pyc_checked_hash", "pyc_unchecked_hash"]
+
 # Helper to make the provider definitions not crash under Bazel 5.4:
 # Bazel 5.4 doesn't support the `init` arg of `provider()`, so we have to
 # not pass that when using Bazel 5.4. But, not passing the `init` arg
@@ -196,7 +198,8 @@ def _PyInfo_init(
         uses_shared_libraries = False,
         imports = depset(),
         has_py2_only_sources = False,
-        has_py3_only_sources = False):
+        has_py3_only_sources = False,
+        pyc_mode = "auto"):
     _check_arg_type("transitive_sources", "depset", transitive_sources)
 
     # Verify it's postorder compatible, but retain is original ordering.
@@ -206,12 +209,18 @@ def _PyInfo_init(
     _check_arg_type("imports", "depset", imports)
     _check_arg_type("has_py2_only_sources", "bool", has_py2_only_sources)
     _check_arg_type("has_py3_only_sources", "bool", has_py3_only_sources)
+    if pyc_mode not in _PYC_MODE_VALUES:
+        fail("invalid compile mode: '{}'; must be one of {}".format(
+            pyc_mode,
+            _PYC_MODE_VALUES,
+        ))
     return {
         "has_py2_only_sources": has_py2_only_sources,
         "has_py3_only_sources": has_py2_only_sources,
         "imports": imports,
         "transitive_sources": transitive_sources,
         "uses_shared_libraries": uses_shared_libraries,
+        "pyc_mode": pyc_mode,
     }
 
 PyInfo, _unused_raw_py_info_ctor = _define_provider(
@@ -236,6 +245,14 @@ as a `.so` file).
 
 This field is currently unused in Bazel and may go away in the future.
 """,
+    "pyc_mode": (
+        "Mode used to determine how to compile python files to bytecode pyc" +
+        "Valid values are `\"auto\"`, no compilation is done" +
+        "`\"py_only\"` no compilation is done and return only .py" +
+        "`\"pyc_only\"` compile py source files to pyc and only return .pyc files not located in pycache" +
+        "`\"pyc_checked_hash\"` return compiled __pycache__/*.pyc files using checked_hash + py files" +
+        "`\"pyc_unchecked_hash\"` return compiled __pycache__/*.pyc files using unchecked_hash + py files"
+    )
     },
 )
 

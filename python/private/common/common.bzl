@@ -53,6 +53,7 @@ def create_binary_semantics_struct(
         get_native_deps_user_link_flags,
         get_stamp_flag,
         maybe_precompile,
+        pyc_mode,
         should_build_native_deps_dso,
         should_create_init_files,
         should_include_build_data):
@@ -94,6 +95,9 @@ def create_binary_semantics_struct(
         maybe_precompile: Callable that may optional precompile the input `.py`
             sources and returns the full set of desired outputs derived from
             the source files (e.g., both py and pyc, only one of them, etc).
+        pyc_mode: str mode of precompilation for the input.py. 
+            possible values passed in can be found in _PYC_MODE_VALUES
+            See PyInfo for details regarding the different modes
         should_build_native_deps_dso: Callable that returns bool; True if
             building a native deps DSO is supported, False if not.
         should_create_init_files: Callable that returns bool; True if
@@ -119,6 +123,7 @@ def create_binary_semantics_struct(
         get_native_deps_user_link_flags = get_native_deps_user_link_flags,
         get_stamp_flag = get_stamp_flag,
         maybe_precompile = maybe_precompile,
+        pyc_mode = pyc_mode,
         should_build_native_deps_dso = should_build_native_deps_dso,
         should_create_init_files = should_create_init_files,
         should_include_build_data = should_include_build_data,
@@ -128,7 +133,8 @@ def create_library_semantics_struct(
         *,
         get_cc_info_for_library,
         get_imports,
-        maybe_precompile):
+        maybe_precompile,
+        pyc_mode):
     """Create a `LibrarySemantics` struct.
 
     Call this instead of a raw call to `struct(...)`; it'll help ensure all
@@ -139,6 +145,7 @@ def create_library_semantics_struct(
             see py_library_impl for arg details.
         get_imports: Callable; see create_binary_semantics_struct.
         maybe_precompile: Callable; see create_binary_semantics_struct.
+        pyc_mode: mode for precompiling pyc files; see PyInfo for details
     Returns:
         a `LibrarySemantics` struct.
     """
@@ -147,6 +154,7 @@ def create_library_semantics_struct(
         get_cc_info_for_library = get_cc_info_for_library,
         get_imports = get_imports,
         maybe_precompile = maybe_precompile,
+        pyc_mode = pyc_mode,
     )
 
 def create_cc_details_struct(
@@ -356,6 +364,7 @@ def create_py_info(ctx, *, direct_sources, imports):
     uses_shared_libraries = False
     has_py2_only_sources = ctx.attr.srcs_version in ("PY2", "PY2ONLY")
     has_py3_only_sources = ctx.attr.srcs_version in ("PY3", "PY3ONLY")
+    pyc_mode = "auto"
     transitive_sources_depsets = []  # list of depsets
     transitive_sources_files = []  # list of Files
     for target in ctx.attr.deps:
@@ -366,6 +375,7 @@ def create_py_info(ctx, *, direct_sources, imports):
             uses_shared_libraries = uses_shared_libraries or info.uses_shared_libraries
             has_py2_only_sources = has_py2_only_sources or info.has_py2_only_sources
             has_py3_only_sources = has_py3_only_sources or info.has_py3_only_sources
+            pyc_mode = pyc_mode or info.pyc_mode
         else:
             # TODO(b/228692666): Remove this once non-PyInfo targets are no
             # longer supported in `deps`.

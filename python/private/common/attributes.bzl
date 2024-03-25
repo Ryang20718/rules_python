@@ -183,6 +183,9 @@ Targets that only provide data files used at runtime belong in the `data`
 attribute.
 """,
         ),
+        # optional attribute, default being auto
+        # determines what mode to compile py file to pyc
+        "pyc_mode": attr.string(default = "auto"),
         # Required attribute, but details vary by rule.
         # Use create_srcs_attr to create one.
         "srcs": None,

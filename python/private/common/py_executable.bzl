@@ -127,7 +127,7 @@ def py_executable_base_impl(ctx, *, semantics, is_test, inherited_environment = 
 
     main_py = determine_main(ctx)
     direct_sources = filter_to_py_srcs(ctx.files.srcs)
-    output_sources = semantics.maybe_precompile(ctx, direct_sources)
+    output_sources = semantics.maybe_precompile(ctx, direct_sources, semantics.pyc_mode)
     imports = collect_imports(ctx, semantics)
     executable, files_to_build = _compute_outputs(ctx, output_sources)
 
